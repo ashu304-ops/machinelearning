@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Clone your Git repo explicitly
+                git branch: 'main', url: 'https://github.com/ashu304-ops/machinelearning.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t diabetes-app:${BUILD_ID} .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                sh 'docker run -d -p 5000:5000 --name diabetes-app-${BUILD_ID} diabetes-app:${BUILD_ID}'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline finished"
+        }
+    }
+}
